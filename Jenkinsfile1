@@ -1,0 +1,31 @@
+node
+{
+    def mavenHome = tool name: "maven3.8.1"
+    //properties([pipelineTriggers([pollSCM('* * * * * ')])])
+    properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '5', artifactNumToKeepStr: '5', daysToKeepStr: '', numToKeepStr: '5')), pipelineTriggers([pollSCM('* * * * * ')])])
+    stage('checkoutcode')
+    {
+        git branch: 'dev', url: 'https://github.com/Ankita006/maven-web-application.git'
+    }
+    stage('codebuild')
+    {
+        sh "${mavenHome}/bin/mvn clean package"
+    }
+    /* stage('codereview')
+    {
+        sh "${mavenHome}/bin/mvn sonar:sonar"
+    }
+    */
+     stage('codedeploy')
+    {
+    sshagent(['e701802b-3ac6-45fd-89df-2b494220f515'])
+    {
+        sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@65.2.10.32:/opt/apache-tomcat-9.0.46/webapps"
+    }
+    }
+     stage('email')
+     {
+        emailext body: '', subject: 'Build Successful', to: 'ankitapal006@gmail.com'    
+     }
+   
+}
