@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+    tools{
+        maven 'maven3.8.1'
+    }
+    triggers{
+        pollSCM('* * * * *')
+    }
+    options{
+        //discard build
+        buildDiscarder(logRotator(artifactDaysToKeepStr: '5', artifactNumToKeepStr: '5', daysToKeepStr: '5', numToKeepStr: '5'))
+        timestamps()
+    }
+
+
+stages{
+    stage('checkoutcode'){
+        steps{
+            git branch: 'dev', url: 'https://github.com/Ankita006/maven-web-application.git'
+        }
+    }
+    
+    stage('build'){
+        steps{
+            sh "mvn clean package"
+        }
+    }
+}
+post{
+    success{
+        emailext body: 'Hi.... Declarative build succeded.', subject: 'Build is over', to: 'ankitapal006@gmail.com'
+        //delete workspace
+        deleteDir()
+    }
+    failure{
+        emailext body: 'Hi.... Declarative build failed.', subject: 'Build is over', to: 'ankitapal006@gmail.com'
+    }
+    always{
+        emailext body: 'Hi.... Declarative build is over.', subject: 'Build is over', to: 'ankitapal006@gmail.com'
+    }
+}
+}
