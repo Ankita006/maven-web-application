@@ -1,0 +1,3 @@
+FROM 015383694844.dkr.ecr.ap-south-1.amazonaws.com/ankita_docker_practice:9.0.46_build13
+
+COPY /target/maven-web-application*.war /opt/tomcat/webapps/maven-web-application.war
