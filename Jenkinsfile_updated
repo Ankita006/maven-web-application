@@ -1,0 +1,36 @@
+pipeline
+{
+    
+    agent any
+    
+    
+    tools
+    {
+        maven 'Maven3.8.3'
+    }
+    
+    options
+    {
+        timestamps()
+    }
+    
+    
+    stages
+    {
+        stage('Git Clone')
+        {
+            steps
+            {
+                git 'https://github.com/Ankita006/maven-web-application.git'
+            }
+        }
+        
+        stage('Code Build')
+        {
+            steps
+            {
+                sh "mvn clean package"
+            }
+        }
+    }
+}
